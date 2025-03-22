@@ -10,7 +10,7 @@ from sklearn.metrics import accuracy_score
 # === UI Layout ===
 st.set_page_config(page_title="Gold Price ML Dashboard", layout="centered")
 st.sidebar.title("📍 เมนู")
-st.sidebar.button("🔄 รีเฟรชข้อมูล", on_click=st.experimental_rerun)
+st.sidebar.button("🔄 รีเฟรชข้อมูล", on_click=st.rerun)
 st.title("📊 วิเคราะห์ราคาทองคำด้วย Machine Learning")
 
 # ดึงข้อมูลราคาทองคำ (XAU/USD)
