@@ -21,17 +21,19 @@ data.dropna(inplace=True)
 # เตรียมข้อมูลสำหรับฝึกโมเดล
 X = data[['Return', 'High_Low', 'Open_Close']]
 y = data['Target']
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
 
-# สร้างโมเดลและฝึก
-model = XGBClassifier()
-model.fit(X_train, y_train)
-y_pred = model.predict(X_test)
-accuracy = accuracy_score(y_test, y_pred)
-
-# พยากรณ์แท่งถัดไป
-latest = X.tail(1)
-prediction = model.predict(latest)[0]
+# ตรวจสอบก่อนว่าเพียงพอสำหรับแบ่ง train/test หรือไม่
+if len(X) >= 10:
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
+    model = XGBClassifier()
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    latest = X.tail(1)
+    prediction = model.predict(latest)[0]
+else:
+    accuracy = 0.0
+    prediction = 0  # หรือ None
 
 # === Streamlit Dashboard ===
 st.set_page_config(page_title="Gold Price ML Dashboard", layout="centered")
