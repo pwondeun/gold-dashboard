@@ -7,7 +7,13 @@ from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
-# ดึงข้อมูลราคาทองคำ (XAU/USD) รายชั่วโมง
+# === UI Layout ===
+st.set_page_config(page_title="Gold Price ML Dashboard", layout="centered")
+st.sidebar.title("📍 เมนู")
+st.sidebar.button("🔄 รีเฟรชข้อมูล", on_click=st.experimental_rerun)
+st.title("📊 วิเคราะห์ราคาทองคำด้วย Machine Learning")
+
+# ดึงข้อมูลราคาทองคำ (XAU/USD)
 data = yf.download("XAUUSD=X", interval="60m", period="30d")
 data.dropna(inplace=True)
 
@@ -22,7 +28,7 @@ data.dropna(inplace=True)
 X = data[['Return', 'High_Low', 'Open_Close']]
 y = data['Target']
 
-# ตรวจสอบก่อนว่าเพียงพอสำหรับแบ่ง train/test หรือไม่
+# ตรวจสอบข้อมูลเพียงพอหรือไม่
 if len(X) >= 10:
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
     model = XGBClassifier()
@@ -33,18 +39,14 @@ if len(X) >= 10:
     prediction = model.predict(latest)[0]
 else:
     accuracy = 0.0
-    prediction = 0  # หรือ None
+    prediction = 0
 
-# === Streamlit Dashboard ===
-st.set_page_config(page_title="Gold Price ML Dashboard", layout="centered")
-st.title("📊 วิเคราะห์ราคาทองคำด้วย Machine Learning")
-
+# แสดงผลลัพธ์
 st.subheader("🔮 คำทำนายแท่งถัดไป:")
 st.success("ขึ้น ⬆️" if prediction == 1 else "ลง ⬇️")
-
 st.metric(label="📊 ความแม่นยำของโมเดล", value=f"{round(accuracy * 100, 2)} %")
 
-# แสดงกราฟราคาทองคำย้อนหลัง
+# กราฟราคาทองคำ
 st.subheader("📈 ราคาทองคำย้อนหลัง (100 แท่ง)")
 fig, ax = plt.subplots(figsize=(10, 4))
 ax.plot(data['Close'][-100:], label='ราคาทองคำ (XAU/USD)', color='gold')
